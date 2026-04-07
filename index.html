@@ -3728,20 +3728,27 @@
         }
 
 
-        /* ================= STACK GALLERY (MOBILE) ================= */
-        #stack-gallery-root {
+        /* ================= HORIZONTAL SCROLL GALLERY (MOBILE/TABLET) ================= */
+        #horizontal-gallery-root {
             display: none;
             width: 100%;
-            height: 480px;
-            position: relative;
-            justify-content: center;
-            align-items: center;
-            overflow: visible;
-            margin-top: 20px;
-            padding-bottom: 40px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px 0 40px;
+            gap: 20px;
+            scroll-padding: 0 10%;
+            scrollbar-width: none;
+            /* Hide scrollbar Firefox */
         }
 
-        @media (max-width: 900px) {
+        #horizontal-gallery-root::-webkit-scrollbar {
+            display: none;
+            /* Hide scrollbar Chrome/Safari */
+        }
+
+        @media (max-width: 1024px) {
             .gallery-container {
                 padding: 0 !important;
                 overflow: visible !important;
@@ -3751,16 +3758,33 @@
                 display: none !important;
             }
 
-            #stack-gallery-root {
+            #horizontal-gallery-root {
                 display: flex !important;
+            }
+
+            .gallery-view-more {
+                display: none !important;
             }
         }
 
-        .stack-container {
+        .gallery-scroll-item {
+            flex: 0 0 80%;
+            max-width: 400px;
+            height: 450px;
+            scroll-snap-align: center;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: #0d0f24;
             position: relative;
-            width: 280px;
-            height: 380px;
-            perspective: 1000px;
+        }
+
+        .gallery-scroll-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .card-rotate {
@@ -3934,11 +3958,6 @@
         </div>
     </section>
 
-    <!-- React & Framer Motion CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- GSAP CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -4603,7 +4622,7 @@
         <h2 class="section-title">Luxury <span>Gallery</span></h2>
         <div class="gallery-container">
             <div id="masonryContainer" class="masonry-list"></div>
-            <div id="stack-gallery-root"></div>
+            <div id="horizontal-gallery-root"></div>
         </div>
         <button class="view-more-btn" id="galleryViewMore">View More</button>
     </section>
@@ -5828,172 +5847,27 @@
 
     </script>
 
-    <!-- React Component Implementation -->
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
-        const { motion, useMotionValue, useTransform } = Motion;
+    <!-- Horizontal Scroll Gallery Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.getElementById('horizontal-gallery-root');
+            if (container) {
+                // galleryItems is defined in the script block above
+                galleryItems.forEach(item => {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-scroll-item';
 
-        function CardRotate({ children, onSendToBack, sensitivity, disableDrag = false }) {
-            const x = useMotionValue(0);
-            const y = useMotionValue(0);
-            const rotateX = useTransform(y, [-100, 100], [60, -60]);
-            const rotateY = useTransform(x, [-100, 100], [-60, 60]);
+                    const img = document.createElement('img');
+                    img.src = item.img;
+                    img.className = 'gallery-scroll-img';
+                    img.alt = 'Luxury Car Gallery';
+                    img.loading = 'lazy';
 
-            function handleDragEnd(_, info) {
-                if (Math.abs(info.offset.x) > sensitivity || Math.abs(info.offset.y) > sensitivity) {
-                    onSendToBack();
-                } else {
-                    x.set(0);
-                    y.set(0);
-                }
-            }
-
-            if (disableDrag) {
-                return (
-                    <motion.div className="card-rotate-disabled" style={{ x: 0, y: 0 }}>
-                        {children}
-                    </motion.div>
-                );
-            }
-
-            return (
-                <motion.div
-                    className="card-rotate"
-                    style={{ x, y, rotateX, rotateY }}
-                    drag
-                    dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                    dragElastic={0.6}
-                    whileTap={{ cursor: 'grabbing' }}
-                    onDragEnd={handleDragEnd}
-                >
-                    {children}
-                </motion.div>
-            );
-        }
-
-        function Stack({
-            randomRotation = false,
-            sensitivity = 200,
-            cards = [],
-            animationConfig = { stiffness: 260, damping: 20 },
-            sendToBackOnClick = false,
-            autoplay = false,
-            autoplayDelay = 3000,
-            pauseOnHover = false,
-            mobileClickOnly = false,
-            mobileBreakpoint = 900
-        }) {
-            const [isMobile, setIsMobile] = useState(false);
-            const [isPaused, setIsPaused] = useState(false);
-
-            useEffect(() => {
-                const checkMobile = () => {
-                    setIsMobile(window.innerWidth < mobileBreakpoint);
-                };
-
-                checkMobile();
-                window.addEventListener('resize', checkMobile);
-                return () => window.removeEventListener('resize', checkMobile);
-            }, [mobileBreakpoint]);
-
-            const shouldDisableDrag = mobileClickOnly && isMobile;
-            const shouldEnableClick = sendToBackOnClick || shouldDisableDrag;
-
-            const [stack, setStack] = useState([]);
-
-            useEffect(() => {
-                if (cards.length) {
-                    setStack(cards.map((content, index) => ({ id: index + 1, content })));
-                }
-            }, [cards]);
-
-            const sendToBack = id => {
-                setStack(prev => {
-                    const newStack = [...prev];
-                    const index = newStack.findIndex(card => card.id === id);
-                    if (index === -1) return prev;
-                    const [card] = newStack.splice(index, 1);
-                    newStack.unshift(card);
-                    return newStack;
+                    galleryItem.appendChild(img);
+                    container.appendChild(galleryItem);
                 });
-            };
-
-            useEffect(() => {
-                if (autoplay && stack.length > 1 && !isPaused) {
-                    const interval = setInterval(() => {
-                        const topCardId = stack[stack.length - 1].id;
-                        sendToBack(topCardId);
-                    }, autoplayDelay);
-
-                    return () => clearInterval(interval);
-                }
-            }, [autoplay, autoplayDelay, stack, isPaused]);
-
-            return (
-                <div
-                    className="stack-container"
-                    onMouseEnter={() => pauseOnHover && setIsPaused(true)}
-                    onMouseLeave={() => pauseOnHover && setIsPaused(false)}
-                >
-                    {stack.map((card, index) => {
-                        const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
-                        return (
-                            <CardRotate
-                                key={card.id}
-                                onSendToBack={() => sendToBack(card.id)}
-                                sensitivity={sensitivity}
-                                disableDrag={shouldDisableDrag}
-                            >
-                                <motion.div
-                                    className="card"
-                                    onClick={() => shouldEnableClick && sendToBack(card.id)}
-                                    animate={{
-                                        rotateZ: (stack.length - index - 1) * 4 + randomRotate,
-                                        scale: 1 + index * 0.06 - stack.length * 0.06,
-                                        transformOrigin: '90% 90%'
-                                    }}
-                                    initial={false}
-                                    transition={{
-                                        type: 'spring',
-                                        stiffness: animationConfig.stiffness,
-                                        damping: animationConfig.damping
-                                    }}
-                                >
-                                    {card.content}
-                                </motion.div>
-                            </CardRotate>
-                        );
-                    })}
-                </div>
-            );
-        }
-
-        // Initialize the gallery items for the Stack
-        const IMAGE_CARDS = [
-            'car2.png',
-            'service_ferrari_red_1774953144261.png',
-            'car3.png',
-            'service_bugatti_blue_1774953400000_1774953291278.png',
-            'hero_car.png',
-            'service_merc_black_1774953400000_1774953260285.png',
-            'service_koenigsegg_white_1774953200395.png',
-            'renovation_car.png',
-            'car gold.png'
-        ].map(img => (
-            <img src={img} className="card-image" alt="Gallery Car" />
-        ));
-
-        const root = ReactDOM.createRoot(document.getElementById('stack-gallery-root'));
-        root.render(
-            <Stack
-                cards={IMAGE_CARDS}
-                autoplay={true}
-                autoplayDelay={3000}
-                randomRotation={true}
-                sensitivity={150}
-                sendToBackOnClick={true}
-            />
-        );
+            }
+        });
     </script>
 
     <!-- Book This Package Button - Scroll to Booking Section -->
@@ -6029,96 +5903,96 @@
 
     <!-- ─── SERVICE CAROUSEL: smooth RAF auto-scroll (mobile/tablet ≤1024px only) ─── -->
     <script>
-    (function () {
-        // Only activate on mobile/tablet
-        var mq = window.matchMedia('(max-width: 1024px)');
+        (function () {
+            // Only activate on mobile/tablet
+            var mq = window.matchMedia('(max-width: 1024px)');
 
-        function initCarousel() {
-            var scroller = document.querySelector('.service-scroller');
-            var track    = document.querySelector('.service-track');
-            if (!scroller || !track) return;
+            function initCarousel() {
+                var scroller = document.querySelector('.service-scroller');
+                var track = document.querySelector('.service-track');
+                if (!scroller || !track) return;
 
-            // ── Configuration ──────────────────────────────────────────────
-            var SPEED        = 0.6;   // px per frame (~36 px/s at 60 fps)
-            var RESUME_DELAY = 2500;  // ms to wait after last user interaction
-            // ───────────────────────────────────────────────────────────────
+                // ── Configuration ──────────────────────────────────────────────
+                var SPEED = 0.6;   // px per frame (~36 px/s at 60 fps)
+                var RESUME_DELAY = 2500;  // ms to wait after last user interaction
+                // ───────────────────────────────────────────────────────────────
 
-            var rafId        = null;
-            var paused       = false;
-            var resumeTimer  = null;
+                var rafId = null;
+                var paused = false;
+                var resumeTimer = null;
 
-            // Disable scroll-snap during auto-scroll to prevent snapping fights
-            scroller.style.scrollSnapType = 'none';
+                // Disable scroll-snap during auto-scroll to prevent snapping fights
+                scroller.style.scrollSnapType = 'none';
 
-            function scheduleResume() {
-                clearTimeout(resumeTimer);
-                resumeTimer = setTimeout(function () {
-                    paused = false;
-                    // Re-disable snap after manual interaction ends
-                    scroller.style.scrollSnapType = 'none';
-                }, RESUME_DELAY);
+                function scheduleResume() {
+                    clearTimeout(resumeTimer);
+                    resumeTimer = setTimeout(function () {
+                        paused = false;
+                        // Re-disable snap after manual interaction ends
+                        scroller.style.scrollSnapType = 'none';
+                    }, RESUME_DELAY);
+                }
+
+                // ── RAF loop ───────────────────────────────────────────────────
+                function tick() {
+                    rafId = requestAnimationFrame(tick);
+                    if (paused) return;
+
+                    // Advance position
+                    scroller.scrollLeft += SPEED;
+
+                    // Infinite loop: when we've scrolled past the first half
+                    // (the original 6 cards), jump back silently
+                    var halfWidth = track.scrollWidth / 2;
+                    if (scroller.scrollLeft >= halfWidth) {
+                        // Instant reset — no visual jump because the second half
+                        // is an exact copy of the first half
+                        scroller.scrollLeft -= halfWidth;
+                    }
+                }
+
+                rafId = requestAnimationFrame(tick);
+
+                // ── Pause on any user interaction ──────────────────────────────
+                function onInteractionStart() {
+                    paused = true;
+                    clearTimeout(resumeTimer);
+                    // Re-enable snap so manual swipe feels natural
+                    scroller.style.scrollSnapType = 'x mandatory';
+                }
+
+                function onInteractionEnd() {
+                    scheduleResume();
+                }
+
+                // Touch events
+                scroller.addEventListener('touchstart', onInteractionStart, { passive: true });
+                scroller.addEventListener('touchend', onInteractionEnd, { passive: true });
+                scroller.addEventListener('touchcancel', onInteractionEnd, { passive: true });
+
+                // Mouse / pointer events (for desktop-width testing via DevTools)
+                scroller.addEventListener('pointerdown', onInteractionStart, { passive: true });
+                scroller.addEventListener('pointerup', onInteractionEnd, { passive: true });
+
+                // Scroll wheel / trackpad
+                scroller.addEventListener('wheel', function () {
+                    onInteractionStart();
+                    scheduleResume();
+                }, { passive: true });
             }
 
-            // ── RAF loop ───────────────────────────────────────────────────
-            function tick() {
-                rafId = requestAnimationFrame(tick);
-                if (paused) return;
-
-                // Advance position
-                scroller.scrollLeft += SPEED;
-
-                // Infinite loop: when we've scrolled past the first half
-                // (the original 6 cards), jump back silently
-                var halfWidth = track.scrollWidth / 2;
-                if (scroller.scrollLeft >= halfWidth) {
-                    // Instant reset — no visual jump because the second half
-                    // is an exact copy of the first half
-                    scroller.scrollLeft -= halfWidth;
+            function run() {
+                if (mq.matches) {
+                    initCarousel();
                 }
             }
 
-            rafId = requestAnimationFrame(tick);
-
-            // ── Pause on any user interaction ──────────────────────────────
-            function onInteractionStart() {
-                paused = true;
-                clearTimeout(resumeTimer);
-                // Re-enable snap so manual swipe feels natural
-                scroller.style.scrollSnapType = 'x mandatory';
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', run);
+            } else {
+                run();
             }
-
-            function onInteractionEnd() {
-                scheduleResume();
-            }
-
-            // Touch events
-            scroller.addEventListener('touchstart',  onInteractionStart, { passive: true });
-            scroller.addEventListener('touchend',    onInteractionEnd,   { passive: true });
-            scroller.addEventListener('touchcancel', onInteractionEnd,   { passive: true });
-
-            // Mouse / pointer events (for desktop-width testing via DevTools)
-            scroller.addEventListener('pointerdown', onInteractionStart, { passive: true });
-            scroller.addEventListener('pointerup',   onInteractionEnd,   { passive: true });
-
-            // Scroll wheel / trackpad
-            scroller.addEventListener('wheel', function () {
-                onInteractionStart();
-                scheduleResume();
-            }, { passive: true });
-        }
-
-        function run() {
-            if (mq.matches) {
-                initCarousel();
-            }
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', run);
-        } else {
-            run();
-        }
-    })();
+        })();
     </script>
 </body>
 
