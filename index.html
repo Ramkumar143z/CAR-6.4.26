@@ -38,22 +38,16 @@
             color: #000;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        /* Hide scrollbar for all browsers */
+        *::-webkit-scrollbar {
+            display: none;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to bottom, var(--gold-deep), var(--magic-1));
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--magic-2);
+        * {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
         }
 
         @keyframes magic-flow {
@@ -83,7 +77,6 @@
             top: 0;
             left: 0;
             right: 0;
-            margin: 0 auto;
             width: 100%;
             padding: 20px 6%;
             display: flex;
@@ -97,47 +90,44 @@
             transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .navbar.scrolled {
-            top: auto;
-            bottom: 30px;
-            transform: none;
-            width: fit-content;
-            max-width: 90%;
-            padding: 12px 40px;
-            background: rgba(8, 12, 24, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-            gap: 30px;
-            animation: navSlideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        @keyframes navSlideIn {
-            0% {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .navbar.hide-bottom {
-            bottom: -150px;
-            opacity: 0;
-            pointer-events: none;
-            transition: bottom 0.5s ease, opacity 0.5s ease;
-        }
-
+        /* Desktop Scrolled Style */
         @media (min-width: 901px) {
+            .navbar.scrolled {
+                top: auto;
+                left: 50%;
+                bottom: 30px;
+                transform: translateX(-50%);
+                width: fit-content;
+                max-width: 95%;
+                padding: 12px 40px;
+                background: rgba(8, 12, 24, 0.6);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 50px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+                gap: 50px;
+                animation: navSlideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            }
+
             .navbar.scrolled .nav-links {
                 display: none;
             }
+
+            @keyframes navSlideIn {
+                0% {
+                    transform: translate(-50%, 100px);
+                    opacity: 0;
+                }
+
+                100% {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+            }
         }
+
+
 
         .logo {
             display: flex;
@@ -172,6 +162,14 @@
         .nav-links a:hover {
             color: var(--magic-2);
             text-shadow: 0 0 15px var(--gold-glow);
+        }
+
+        .nav-link-close {
+            display: none;
+        }
+
+        .mobile-only-link {
+            display: none;
         }
 
         .nav-cta {
@@ -851,8 +849,41 @@
         }
 
         @media (max-width: 1024px) {
+
+            html,
+            body {
+                width: 100vw;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+
             .service-container {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+                line-height: 1.2;
+                word-wrap: break-word;
+                max-width: 100%;
+                padding-left: 20px;
+                padding-right: 20px;
+                box-sizing: border-box;
+                display: block;
+            }
+
+            section,
+            .container,
+            .content,
+            [class*="section"] {
+                width: 100%;
+                max-width: 100vw;
+                box-sizing: border-box;
+                overflow-x: hidden;
+            }
+
+            * {
+                max-width: 100vw;
             }
         }
 
@@ -2188,14 +2219,57 @@
             transform: translateX(4px);
         }
 
+        .booking-contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .booking-contact-list.mobile-only {
+            display: none;
+        }
+
         @media (max-width: 1024px) {
             .booking-inner {
-                grid-template-columns: 1fr;
-                gap: 60px;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 50px;
             }
 
             .booking-info {
                 position: static;
+                text-align: left;
+                /* Keep left aligned */
+            }
+
+            .booking-eyebrow {
+                justify-content: flex-start;
+                /* Left aligned eyebrow */
+            }
+
+            .booking-desc {
+                margin-left: 0;
+                margin-right: 0;
+                max-width: 100%;
+            }
+
+            .booking-form-panel {
+                width: 100%;
+                max-width: 600px;
+                align-self: center;
+                /* ONLY center the form panel */
+            }
+
+            .booking-contact-list.desktop-only {
+                display: none;
+            }
+
+            .booking-contact-list.mobile-only {
+                display: flex;
+                margin-top: 20px;
+                align-items: flex-start;
+                /* Keep items left aligned */
+                text-align: left;
             }
 
             .booking-heading {
@@ -2427,6 +2501,65 @@
             }
         }
 
+        /* --- SCROLL HINT (MOBILE) --- */
+        .service-scroll-hint {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding: 10px 18px;
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 50px;
+            width: fit-content;
+            margin-left: 7%;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            animation: fadeInHint 1s ease forwards 0.5s;
+        }
+
+        .service-scroll-hint span {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--magic-2);
+        }
+
+        .hint-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--magic-1);
+            animation: hintArrowBounce 1.5s infinite ease-in-out;
+        }
+
+        @keyframes hintArrowBounce {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+        }
+
+        @keyframes fadeInHint {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .service-scroll-hint {
+                display: flex;
+                margin-bottom: 20px;
+            }
+        }
+
         /* ═══════════════════════════════════════════════════════════════════════════════
        MOBILE VIEW FIXES - max-width: 900px
        All fixes are CSS-only with no HTML structure changes
@@ -2444,52 +2577,93 @@
                 width: 100vw;
             }
 
+            .section-title {
+                font-size: clamp(1.5rem, 7vw, 2.2rem) !important;
+                letter-spacing: 0.08em !important;
+                margin-bottom: 30px !important;
+                line-height: 1.2 !important;
+                word-break: normal !important;
+                overflow-wrap: break-word !important;
+            }
+
             .navbar {
                 padding: 12px 4%;
                 width: 100%;
                 max-width: 100vw;
-                overflow: hidden;
+                background: rgba(8, 12, 24, 0.75);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                overflow: visible !important;
             }
 
             .navbar.scrolled {
-                width: calc(100% - 40px);
-                max-width: calc(100vw - 40px);
-                left: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                bottom: 15px;
-                display: none !important;
+                top: 15px;
+                bottom: auto;
+                left: 15px;
+                right: 15px;
+                width: calc(100% - 30px);
+                max-width: none;
+                padding: 10px 20px;
+                display: flex !important;
+                border-radius: 12px;
             }
 
             .nav-links {
                 display: none !important;
                 position: fixed;
-                top: 70px;
-                right: 0;
+                /* Side-drawer */
+                top: 0;
                 left: 0;
-                width: 100%;
-                max-width: 100vw;
-                height: auto;
+                width: 280px;
+                height: 100vh;
                 flex-direction: column;
                 background: rgba(8, 12, 24, 0.98);
-                backdrop-filter: blur(20px);
-                gap: 15px;
-                padding: 20px 5%;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                z-index: 997;
-                transform: translateY(-120%);
-                transition: transform 0.3s ease;
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                gap: 0;
+                padding: 80px 30px;
+                z-index: 1000;
+                transform: translateX(-100%);
+                opacity: 1;
+                pointer-events: auto;
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: left;
             }
 
             .nav-links.active {
                 display: flex !important;
-                transform: translateY(0);
+                transform: translateX(0);
             }
 
+
+
             .nav-links a {
-                font-size: 0.9rem;
-                text-align: center;
+                font-size: 1.1rem;
+                text-align: left;
+                padding: 15px 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                font-weight: 500;
+                color: #fff;
+                display: block;
             }
+
+            .nav-link-close {
+                display: block;
+                position: absolute;
+                top: 25px;
+                right: 25px;
+                font-size: 1.8rem;
+                color: var(--magic-1);
+                cursor: pointer;
+                background: none;
+                border: none;
+            }
+
+
 
             .nav-cta {
                 display: none;
@@ -2640,11 +2814,13 @@
                 padding: 20px 0 40px !important;
                 scroll-snap-type: x mandatory;
                 -webkit-overflow-scrolling: touch;
-                scrollbar-width: none; /* Firefox */
+                scrollbar-width: none;
+                /* Firefox */
             }
 
             .service-container::-webkit-scrollbar {
-                display: none; /* Chrome/Safari */
+                display: none;
+                /* Chrome/Safari */
             }
 
             .service-card {
@@ -3030,7 +3206,7 @@
             }
 
             /* Hide the duplicate set of brands on mobile (6 unique brands) */
-            .marquee-track > .brand-pill:nth-child(n+7) {
+            .marquee-track>.brand-pill:nth-child(n+7) {
                 display: none !important;
             }
 
@@ -3343,73 +3519,75 @@
         }
 
 
-            /* ================= STACK GALLERY (MOBILE) ================= */
+        /* ================= STACK GALLERY (MOBILE) ================= */
+        #stack-gallery-root {
+            display: none;
+            width: 100%;
+            height: 480px;
+            position: relative;
+            justify-content: center;
+            align-items: center;
+            overflow: visible;
+            margin-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        @media (max-width: 900px) {
+            .gallery-container {
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            #masonryContainer {
+                display: none !important;
+            }
+
             #stack-gallery-root {
-                display: none;
-                width: 100%;
-                height: 480px;
-                position: relative;
-                justify-content: center;
-                align-items: center;
-                overflow: visible;
-                margin-top: 20px;
-                padding-bottom: 40px;
+                display: flex !important;
             }
+        }
 
-            @media (max-width: 900px) {
-                .gallery-container {
-                    padding: 0 !important;
-                    overflow: visible !important;
-                }
-                #masonryContainer {
-                    display: none !important;
-                }
-                #stack-gallery-root {
-                    display: flex !important;
-                }
-            }
+        .stack-container {
+            position: relative;
+            width: 280px;
+            height: 380px;
+            perspective: 1000px;
+        }
 
-            .stack-container {
-                position: relative;
-                width: 280px;
-                height: 380px;
-                perspective: 1000px;
-            }
+        .card-rotate {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
 
-            .card-rotate {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                cursor: grab;
-            }
+        .card-rotate-disabled {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
 
-            .card-rotate-disabled {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                cursor: pointer;
-            }
+        .card {
+            border-radius: 24px;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            background: #0d0f24;
+        }
 
-            .card {
-                border-radius: 24px;
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-                border: 1px solid rgba(212, 175, 55, 0.4);
-                background: #0d0f24;
-            }
-
-            .card-image {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                pointer-events: none;
-            }
-        </style>
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -3422,6 +3600,7 @@
 
         <nav>
             <ul class="nav-links" id="navLinks">
+                <button class="nav-link-close" id="navClose">&times;</button>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Services</a></li>
                 <li><a href="#whyus">Why Us</a></li>
@@ -3560,160 +3739,211 @@
     <section class="services" id="services">
         <h2 class="section-title">Our <span>Services</span></h2>
 
+        <!-- Mobile Scroll Hint -->
+        <div class="service-scroll-hint">
+            <span>Swipe to explore packages</span>
+            <div class="hint-arrow">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </div>
+        </div>
+
         <div class="service-container">
 
             <!-- 1. EXPRESS DETAIL -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 1,999</span>
                             <h3>Express Detail</h3>
-                            <p class="subtitle">A swift yet thorough refresh for your vehicle &mdash; perfect for
-                                regular upkeep.</p>
+                            <p class="subtitle">
+                                A swift yet thorough refresh for your vehicle — perfect for regular upkeep.
+                            </p>
                         </div>
                         <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_ferrari_red_1774953144261.png" alt="Ferrari" />
+                            <img class="card-front-img" src="service_ferrari_red_1774953144261.png" alt="Ferrari">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="express">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
-                                <li>Hand wash &amp; wheel clean</li>
-                                <li>Premium 2&ndash;4 week wax</li>
+                                <li>Hand wash & wheel clean</li>
+                                <li>Premium 2–4 week wax</li>
                                 <li>Tire dressing (satin finish)</li>
-                                <li>Air blow cracks &amp; door jams</li>
-                                <li>Interior vacuum &amp; wipe-down</li>
-                                <li>Window cleaning inside &amp; out</li>
+                                <li>Air blow cracks & door jams</li>
+                                <li>Interior vacuum & wipe-down</li>
+                                <li>Window cleaning inside & out</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="express">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
+
 
             <!-- 2. FULL DETAIL -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 2,999</span>
                             <h3>Full Detail</h3>
-                            <p class="subtitle">The complete alchemy treatment &mdash; every inch of your car brought
-                                back to life.
+                            <p class="subtitle">
+                                The complete alchemy treatment — every inch of your car brought back to life.
                             </p>
                         </div>
                         <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_lambo_yellow_1774953173938.png"
-                                alt="Lamborghini" />
+                            <img class="card-front-img" src="service_lambo_yellow_1774953173938.png" alt="Lamborghini">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="full">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
                                 <li>Hand wash with premium shampoo</li>
-                                <li>Premium quality wax (2&ndash;4 weeks)</li>
+                                <li>Premium quality wax (2–4 weeks)</li>
                                 <li>All interior surfaces scrubbed</li>
                                 <li>Deep vacuum: carpets, seats, mats</li>
                                 <li>Engine bay light clean</li>
                                 <li>Leather conditioning treatment</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="full">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
+
 
             <!-- 3. DECONTAMINATION -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 3,999</span>
                             <h3>Decontamination</h3>
-                            <p class="subtitle">Deep science for stubborn contaminants &mdash; iron, tar, water spots
-                                eliminated.</p>
+                            <p class="subtitle">
+                                Deep science for stubborn contaminants — iron, tar, water spots eliminated.
+                            </p>
                         </div>
                         <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_audi_orange_1774953231641.png" alt="Audi" />
+                            <img class="card-front-img" src="service_audi_orange_1774953231641.png" alt="Audi">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="decon">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
-                                <li>Clay bar &amp; iron treatment</li>
-                                <li>Water spot &amp; tar removal</li>
+                                <li>Clay bar & iron treatment</li>
+                                <li>Water spot & tar removal</li>
                                 <li>Leather seat treatment</li>
                                 <li>Rubber floor mat deep clean</li>
                                 <li>Thorough vacuuming</li>
                                 <li>Paint surface prep coat</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="decon">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
+
 
             <!-- 4. CERAMIC COATING -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 9,999</span>
                             <h3>Ceramic Coating</h3>
-                            <p class="subtitle">Long-lasting nano-ceramic protection &mdash; repels water, UV, and
-                                contamination for
-                                years.</p>
+                            <p class="subtitle">
+                                Long-lasting nano-ceramic protection — repels water, UV, and contamination for years.
+                            </p>
                         </div>
                         <div class="card-front-bottom">
                             <img class="card-front-img" src="service_koenigsegg_white_1774953200395.png"
-                                alt="Koenigsegg" />
+                                alt="Koenigsegg">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="ceramic">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
                                 <li>Full paint decontamination</li>
                                 <li>Machine paint correction</li>
                                 <li>Professional ceramic application</li>
-                                <li>2&ndash;5 year protection warranty</li>
+                                <li>2–5 year protection warranty</li>
                                 <li>Hydrophobic finish</li>
-                                <li>UV &amp; scratch resistance</li>
+                                <li>UV & scratch resistance</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="ceramic">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
+
 
             <!-- 5. PAINT CORRECTION -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 5,999</span>
                             <h3>Paint Correction</h3>
-                            <p class="subtitle">Swirl marks, scratches, and oxidation dissolved with machine polishing
-                                mastery.</p>
+                            <p class="subtitle">
+                                Swirl marks, scratches, and oxidation dissolved with machine polishing mastery.
+                            </p>
                         </div>
                         <div class="card-front-bottom">
                             <img class="card-front-img" src="service_merc_black_1774953400000_1774953260285.png"
-                                alt="Mercedes" />
+                                alt="Mercedes">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="paint">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
@@ -3725,30 +3955,39 @@
                                 <li>Paint sealant application</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="paint">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
+
 
             <!-- 6. PPF WRAP -->
             <div class="service-card">
                 <div class="card-inner">
+
                     <div class="card-front">
                         <div class="card-front-top">
                             <span class="badge">STARTING AT &#8377; 14,999</span>
                             <h3>PPF Wrap</h3>
-                            <p class="subtitle">Paint Protection Film &mdash; invisible armour against stone chips,
-                                bugs, and road
-                                debris.</p>
+                            <p class="subtitle">
+                                Paint Protection Film — invisible armour against stone chips, bugs, and road debris.
+                            </p>
                         </div>
                         <div class="card-front-bottom">
                             <img class="card-front-img" src="service_bugatti_blue_1774953400000_1774953291278.png"
-                                alt="Bugatti" />
+                                alt="Bugatti">
                         </div>
                     </div>
-                    <div class="card-back">
+
+                    <div class="card-back" data-package="ppf">
                         <div class="card-back-top">
                             <div class="card-back-title">What's Included</div>
                             <ul class="feature-list">
@@ -3760,14 +3999,21 @@
                                 <li>Post-install ceramic top coat</li>
                             </ul>
                         </div>
-                        <button class="btn-service-book" type="button" onclick="location.href='#book'">Book This
-                            Package</button>
-                        <p class="card-back-hint">Move away to flip back &#8617;</p>
+
+                        <a href="#book" class="btn-service-book" data-package="ppf">
+                            Book This Package
+                        </a>
+
+                        <p class="card-back-hint">
+                            Move away to flip back &#8617;
+                        </p>
                     </div>
+
                 </div>
             </div>
 
 
+        </div>
     </section>
 
     <!-- ─── PROCESS ─── -->
@@ -3949,7 +4195,8 @@
                     comes to
                     you — no need to travel anywhere.</p>
 
-                <div class="booking-contact-list">
+                <!-- DESKTOP ONLY: Original position -->
+                <div class="booking-contact-list desktop-only">
                     <div class="booking-contact-item">
                         <div class="booking-contact-icon">
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
@@ -3959,8 +4206,8 @@
                             </svg>
                         </div>
                         <div class="booking-contact-text">
-                            <span class="booking-contact-label">Phone</span>
-                            <span class="booking-contact-value">+91 98765 43210</span>
+                            <span class="booking-contact-label">Phone Support</span>
+                            <span class="booking-contact-value">+91 91599 00111</span>
                         </div>
                     </div>
 
@@ -3973,24 +4220,8 @@
                             </svg>
                         </div>
                         <div class="booking-contact-text">
-                            <span class="booking-contact-label">Email</span>
-                            <span class="booking-contact-value"><a href="/cdn-cgi/l/email-protection"
-                                    class="__cf_email__"
-                                    data-cfemail="bfd7dad3d3d0ffd3cac7dbcdd6c9da91d6d1">[email&#160;protected]</a></span>
-                        </div>
-                    </div>
-
-                    <div class="booking-contact-item">
-                        <div class="booking-contact-icon">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                        </div>
-                        <div class="booking-contact-text">
-                            <span class="booking-contact-label">Hours</span>
-                            <span class="booking-contact-value">Mon – Sun: 7:00 AM – 7:00 PM</span>
+                            <span class="booking-contact-label">Email Enquiry</span>
+                            <span class="booking-contact-value">info@luxdrive.in</span>
                         </div>
                     </div>
 
@@ -4003,8 +4234,8 @@
                             </svg>
                         </div>
                         <div class="booking-contact-text">
-                            <span class="booking-contact-label">Service Area</span>
-                            <span class="booking-contact-value">All Chennai — We Come To You</span>
+                            <span class="booking-contact-label">Service Hub</span>
+                            <span class="booking-contact-value">CBE, India</span>
                         </div>
                     </div>
                 </div>
@@ -4091,6 +4322,48 @@
                         </svg>
                     </button>
                 </form>
+            </div>
+
+            <!-- MOBILE ONLY: Visible below form on mobile/tablet -->
+            <div class="booking-contact-list mobile-only">
+                <div class="booking-contact-item">
+                    <div class="booking-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </div>
+                    <div class="booking-contact-text">
+                        <span class="booking-contact-label">Phone Support</span>
+                        <span class="booking-contact-value">+91 91599 00111</span>
+                    </div>
+                </div>
+
+                <div class="booking-contact-item">
+                    <div class="booking-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                    </div>
+                    <div class="booking-contact-text">
+                        <span class="booking-contact-label">Email Enquiry</span>
+                        <span class="booking-contact-value">info@luxdrive.in</span>
+                    </div>
+                </div>
+
+                <div class="booking-contact-item">
+                    <div class="booking-contact-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                    </div>
+                    <div class="booking-contact-text">
+                        <span class="booking-contact-label">Service Hub</span>
+                        <span class="booking-contact-value">CBE, India</span>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -4229,10 +4502,45 @@
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
-        // Mobile menu toggle
+        // Mobile menu toggle with History API handling
         const menuToggle = document.getElementById("menuToggle");
+        const navClose = document.getElementById("navClose");
         const navLinks = document.getElementById("navLinks");
-        menuToggle.addEventListener("click", () => navLinks.classList.toggle("active"));
+
+        function openMobileMenu() {
+            navLinks.classList.add("active");
+            // Add a temporary state so 'Back' button closes the menu instead of leaving the page
+            history.pushState({ menuOpen: true }, "");
+        }
+
+        function closeMobileMenu() {
+            navLinks.classList.remove("active");
+            // If the user closed manually (X/Link), revert the history state
+            if (history.state && history.state.menuOpen) {
+                history.back();
+            }
+        }
+
+        menuToggle.addEventListener("click", openMobileMenu);
+        navClose.addEventListener("click", closeMobileMenu);
+
+        // Handle browser's Back button and Mobile Backswipe gesture
+        window.addEventListener("popstate", (event) => {
+            if (navLinks.classList.contains("active")) {
+                navLinks.classList.remove("active");
+            }
+        });
+
+        // Close mobile menu when a link is clicked
+        navLinks.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", () => {
+                // Remove class and fix history
+                navLinks.classList.remove("active");
+                if (history.state && history.state.menuOpen) {
+                    history.back();
+                }
+            });
+        });
 
         // GSAP animations
         gsap.registerPlugin(ScrollTrigger);
@@ -4908,22 +5216,21 @@
 
         // ── NAVBAR SCROLL LOGIC ──
         const navbar = document.querySelector('.navbar');
-        const formSection = document.querySelector('.booking-section');
+        const heroSection = document.getElementById('home');
 
         window.addEventListener('scroll', () => {
-            const scrollBottom = window.scrollY + window.innerHeight;
-            // Adjust trigger point if necessary. Adds 100px buffer.
-            const formTop = formSection ? formSection.offsetTop + 100 : Infinity;
+            // Only apply floating pill on desktop (width > 900)
+            if (window.innerWidth > 900) {
+                const heroHeight = heroSection ? heroSection.offsetHeight : 800;
 
-            if (window.scrollY > 80 && scrollBottom < formTop) {
-                navbar.classList.add('scrolled');
-                navbar.classList.remove('hide-bottom');
-            } else if (scrollBottom >= formTop) {
-                navbar.classList.add('scrolled');
-                navbar.classList.add('hide-bottom');
+                if (window.scrollY > (heroHeight - 100)) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             } else {
+                // Ensure mobile never gets the scrolled floating style
                 navbar.classList.remove('scrolled');
-                navbar.classList.remove('hide-bottom');
             }
         });
 
@@ -5158,6 +5465,37 @@
                 sendToBackOnClick={true}
             />
         );
+    </script>
+
+    <!-- Book This Package Button - Scroll to Booking Section -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Listen for clicks on both the button and the whole back face of the card
+            const serviceBacks = document.querySelectorAll('.card-back');
+
+            serviceBacks.forEach(cardBack => {
+                cardBack.addEventListener('click', function (e) {
+                    // Logic to find the package key from the card or its children
+                    const packageKey = cardBack.getAttribute('data-package');
+                    const bookingSection = document.getElementById('book');
+                    const packageSelect = document.getElementById('bf-package');
+
+                    console.log("Package selected:", packageKey);
+
+                    // Pre-select the correct package in the form
+                    if (packageSelect && packageKey) {
+                        packageSelect.value = packageKey;
+                    }
+
+                    // Smooth scroll to the booking section
+                    if (bookingSection) {
+                        bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    } else {
+                        console.warn("Booking section with id 'book' not found");
+                    }
+                });
+            });
+        });
     </script>
 </body>
 
