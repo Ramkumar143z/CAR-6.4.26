@@ -4013,8 +4013,8 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="express">
-                                Book This Package
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
                             </a>
 
                             <p class="card-back-hint">
@@ -4069,8 +4069,8 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="full">
-                                Book This Package
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
                             </a>
 
                             <p class="card-back-hint">
@@ -4125,7 +4125,7 @@
                             </div>
 
                             <a href="#book" class="btn-service-book" data-package="decon">
-                                Book This Package
+                                Book this package
                             </a>
 
                             <p class="card-back-hint">
@@ -4180,11 +4180,9 @@
                                     <li>UV & scratch resistance</li>
                                 </ul>
                             </div>
-
-                            <a href="#book" class="btn-service-book" data-package="ceramic">
-                                Book This Package
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
                             </a>
-
                             <p class="card-back-hint">
                                 Move away to flip back &#8617;
                             </p>
@@ -4237,8 +4235,8 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="paint">
-                                Book This Package
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
                             </a>
 
                             <p class="card-back-hint">
@@ -4293,8 +4291,8 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="ppf">
-                                Book This Package
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
                             </a>
 
                             <p class="card-back-hint">
@@ -4342,8 +4340,9 @@
                                     <li>Window cleaning inside & out</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="express">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -4384,8 +4383,9 @@
                                     <li>Leather conditioning treatment</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="full">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -4466,8 +4466,9 @@
                                     <li>UV & scratch resistance</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="ceramic">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -4508,8 +4509,9 @@
                                     <li>Paint sealant application</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="paint">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -4550,8 +4552,9 @@
                                     <li>Post-install ceramic top coat</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="ppf">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book this package
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -5904,60 +5907,63 @@
     <!-- ─── SERVICE CAROUSEL: smooth RAF auto-scroll (mobile/tablet ≤1024px only) ─── -->
     <script>
         (function () {
-            // Only activate on mobile/tablet
             var mq = window.matchMedia('(max-width: 1024px)');
+            var rafId = null;
+            var isRunning = false;
 
             function initCarousel() {
+                if (isRunning) return;
                 var scroller = document.querySelector('.service-scroller');
                 var track = document.querySelector('.service-track');
                 if (!scroller || !track) return;
 
+                console.log("Initializing Service Carousel Auto-Scroll...");
+
                 // ── Configuration ──────────────────────────────────────────────
-                var SPEED = 0.6;   // px per frame (~36 px/s at 60 fps)
-                var RESUME_DELAY = 2500;  // ms to wait after last user interaction
+                var SPEED = 1.5;   // px per frame (~90 px/s at 60 fps)
+                var RESUME_DELAY = 1500;  // ms to wait after last user interaction
                 // ───────────────────────────────────────────────────────────────
 
-                var rafId = null;
                 var paused = false;
                 var resumeTimer = null;
 
-                // Disable scroll-snap during auto-scroll to prevent snapping fights
+                // Force scroll-behavior auto to prevent conflicts with RAF
+                scroller.style.scrollBehavior = 'auto';
                 scroller.style.scrollSnapType = 'none';
 
                 function scheduleResume() {
                     clearTimeout(resumeTimer);
                     resumeTimer = setTimeout(function () {
                         paused = false;
-                        // Re-disable snap after manual interaction ends
                         scroller.style.scrollSnapType = 'none';
                     }, RESUME_DELAY);
                 }
 
-                // ── RAF loop ───────────────────────────────────────────────────
                 function tick() {
+                    if (!mq.matches) {
+                        isRunning = false;
+                        return;
+                    }
+                    
                     rafId = requestAnimationFrame(tick);
                     if (paused) return;
 
-                    // Advance position
-                    scroller.scrollLeft += SPEED;
-
-                    // Infinite loop: when we've scrolled past the first half
-                    // (the original 6 cards), jump back silently
+                    // Infinite loop jump
                     var halfWidth = track.scrollWidth / 2;
-                    if (scroller.scrollLeft >= halfWidth) {
-                        // Instant reset — no visual jump because the second half
-                        // is an exact copy of the first half
-                        scroller.scrollLeft -= halfWidth;
+                    if (halfWidth > 0) {
+                        scroller.scrollLeft += SPEED;
+                        if (scroller.scrollLeft >= halfWidth) {
+                            scroller.scrollLeft -= halfWidth;
+                        }
                     }
                 }
 
+                isRunning = true;
                 rafId = requestAnimationFrame(tick);
 
-                // ── Pause on any user interaction ──────────────────────────────
                 function onInteractionStart() {
                     paused = true;
                     clearTimeout(resumeTimer);
-                    // Re-enable snap so manual swipe feels natural
                     scroller.style.scrollSnapType = 'x mandatory';
                 }
 
@@ -5965,32 +5971,32 @@
                     scheduleResume();
                 }
 
-                // Touch events
                 scroller.addEventListener('touchstart', onInteractionStart, { passive: true });
                 scroller.addEventListener('touchend', onInteractionEnd, { passive: true });
                 scroller.addEventListener('touchcancel', onInteractionEnd, { passive: true });
-
-                // Mouse / pointer events (for desktop-width testing via DevTools)
                 scroller.addEventListener('pointerdown', onInteractionStart, { passive: true });
                 scroller.addEventListener('pointerup', onInteractionEnd, { passive: true });
-
-                // Scroll wheel / trackpad
                 scroller.addEventListener('wheel', function () {
                     onInteractionStart();
                     scheduleResume();
                 }, { passive: true });
             }
 
-            function run() {
+            function handleResize() {
                 if (mq.matches) {
                     initCarousel();
+                } else {
+                    if (rafId) cancelAnimationFrame(rafId);
+                    isRunning = false;
                 }
             }
 
+            mq.addEventListener('change', handleResize);
+            
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', run);
+                document.addEventListener('DOMContentLoaded', handleResize);
             } else {
-                run();
+                handleResize();
             }
         })();
     </script>
