@@ -71,6 +71,12 @@
             scroll-behavior: smooth;
         }
 
+        /* Fixed Navbar Scroll Margin Adjustment */
+        section,
+        footer {
+            scroll-margin-top: 90px;
+        }
+
         /* ─── NAVBAR ─── */
         .navbar {
             position: fixed;
@@ -448,12 +454,34 @@
             z-index: 2;
         }
 
-        .service-container {
+        .service-container,
+        .service-track {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             row-gap: 50px;
             margin-top: 60px;
+        }
+
+        .service-scroller {
+            width: 100%;
+            position: relative;
+        }
+
+        /* Duplicate cards are ONLY for the mobile/tablet infinite-loop carousel */
+        .duplicate-card {
+            display: none;
+        }
+
+        /* Continuous Scroll Animation */
+        @keyframes scroll-track {
+            0% {
+                transform: translate3d(0, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(-50%, 0, 0);
+            }
         }
 
         /* ══════════════════════════════════════
@@ -857,8 +885,51 @@
                 overflow-x: hidden;
             }
 
-            .service-container {
-                grid-template-columns: repeat(2, 1fr);
+            /* ── SERVICE CAROUSEL: mobile/tablet only ── */
+            /* Reveal the duplicate cards cloned for infinite loop */
+            .duplicate-card {
+                display: flex;
+            }
+
+            .service-scroller {
+                overflow-x: scroll;
+                overflow-y: hidden;
+                width: 100%;
+                padding: 10px 0 30px;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+                -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+            }
+
+            .service-scroller::-webkit-scrollbar {
+                display: none;
+            }
+
+            .service-track {
+                display: flex !important;
+                grid-template-columns: none !important;
+                gap: 22px;
+                width: max-content;
+                margin-top: 30px;
+                padding-left: 16px;
+                padding-right: 16px;
+                /* NO CSS animation — driven by JS RAF */
+                animation: none !important;
+                transform: none !important;
+                will-change: auto;
+            }
+
+            .service-card {
+                flex: 0 0 300px;
+                width: 300px;
+                height: 370px;
+                scroll-snap-align: center;
+                transform: translateZ(0);
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
             }
 
             .section-title {
@@ -888,18 +959,13 @@
         }
 
         @media (max-width: 768px) {
-            .service-container {
-                grid-template-columns: 1fr;
-            }
-
             .service-card {
-                height: 300px;
+                flex: 0 0 270px;
+                width: 270px;
+                height: 340px;
             }
 
-            .card-front {
-                padding: 12px 14px;
-            }
-
+            .card-front,
             .card-back {
                 padding: 12px 14px;
             }
@@ -2275,6 +2341,25 @@
             .booking-heading {
                 font-size: 2.5rem;
             }
+
+            .booking-contact-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .booking-contact-icon svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .booking-contact-item {
+                gap: 12px;
+            }
+
+            .booking-submit-btn svg {
+                width: 16px;
+                height: 16px;
+            }
         }
 
         @media (max-width: 640px) {
@@ -2288,6 +2373,25 @@
 
             .booking-heading {
                 font-size: 2rem;
+            }
+
+            .booking-contact-icon {
+                width: 30px;
+                height: 30px;
+            }
+
+            .booking-contact-icon svg {
+                width: 13px;
+                height: 13px;
+            }
+
+            .booking-contact-item {
+                gap: 10px;
+            }
+
+            .booking-submit-btn svg {
+                width: 15px;
+                height: 15px;
             }
         }
 
@@ -2417,7 +2521,7 @@
             position: absolute;
             bottom: 30px;
             left: 30px;
-            z-index: 10000;
+            z-index: 900;
             pointer-events: none;
             display: flex;
             flex-direction: column;
@@ -2498,6 +2602,111 @@
 
             .toast-card {
                 width: 100%;
+            }
+        }
+
+        .flip-card-instruction {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--gold);
+            opacity: 0.9;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .flip-card-instruction svg {
+            animation: handShake 2s infinite ease-in-out;
+        }
+
+        @keyframes handShake {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            25% {
+                transform: rotate(-15deg);
+            }
+
+            50% {
+                transform: rotate(15deg);
+            }
+
+            75% {
+                transform: rotate(-10deg);
+            }
+        }
+
+        /* ─── AUTO-SCROLLING SERVICES (MOBILE/TABLET) ─── */
+        @keyframes serviceScroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* Hide duplicate cards on desktop specifically */
+        @media (min-width: 1025px) {
+            .duplicate-card {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .services {
+                overflow: hidden !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .services .section-title {
+                padding-left: 7%;
+                margin-left: 0;
+            }
+
+            .service-scroller {
+                width: 100%;
+                overflow: hidden;
+                position: relative;
+            }
+
+            .service-scroll-hint {
+                margin-left: 7% !important;
+                display: flex !important;
+                opacity: 1 !important;
+            }
+
+            .service-container {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+                grid-template-columns: none !important;
+                gap: 24px !important;
+                padding: 10px 24px !important;
+                width: max-content !important;
+                max-width: none !important;
+                overflow: visible !important;
+                animation: serviceScroll 4s linear infinite;
+                margin-top: 40px !important;
+            }
+
+            .service-container:hover {
+                animation-play-state: paused;
+            }
+
+            .service-card {
+                flex: 0 0 300px !important;
+                height: 340px !important;
+            }
+
+            .flip-card-instruction {
+                display: flex;
             }
         }
 
@@ -3739,282 +3948,597 @@
     <section class="services" id="services">
         <h2 class="section-title">Our <span>Services</span></h2>
 
-        <!-- Mobile Scroll Hint -->
-        <div class="service-scroll-hint">
-            <span>Swipe to explore packages</span>
-            <div class="hint-arrow">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-            </div>
-        </div>
 
-        <div class="service-container">
+        <div class="service-scroller">
+            <div class="service-track">
 
-            <!-- 1. EXPRESS DETAIL -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 1. EXPRESS DETAIL -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 1,999</span>
-                            <h3>Express Detail</h3>
-                            <p class="subtitle">
-                                A swift yet thorough refresh for your vehicle — perfect for regular upkeep.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 1,999</span>
+                                <h3>Express Detail</h3>
+                                <p class="subtitle">
+                                    A swift yet thorough refresh for your vehicle — perfect for regular upkeep.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_ferrari_red_1774953144261.png" alt="Ferrari">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="express">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Hand wash & wheel clean</li>
+                                    <li>Premium 2–4 week wax</li>
+                                    <li>Tire dressing (satin finish)</li>
+                                    <li>Air blow cracks & door jams</li>
+                                    <li>Interior vacuum & wipe-down</li>
+                                    <li>Window cleaning inside & out</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="express">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_ferrari_red_1774953144261.png" alt="Ferrari">
-                        </div>
+
                     </div>
-
-                    <div class="card-back" data-package="express">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Hand wash & wheel clean</li>
-                                <li>Premium 2–4 week wax</li>
-                                <li>Tire dressing (satin finish)</li>
-                                <li>Air blow cracks & door jams</li>
-                                <li>Interior vacuum & wipe-down</li>
-                                <li>Window cleaning inside & out</li>
-                            </ul>
-                        </div>
-
-                        <a href="#book" class="btn-service-book" data-package="express">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
-                    </div>
-
                 </div>
-            </div>
 
 
-            <!-- 2. FULL DETAIL -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 2. FULL DETAIL -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 2,999</span>
-                            <h3>Full Detail</h3>
-                            <p class="subtitle">
-                                The complete alchemy treatment — every inch of your car brought back to life.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 2,999</span>
+                                <h3>Full Detail</h3>
+                                <p class="subtitle">
+                                    The complete alchemy treatment — every inch of your car brought back to life.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_lambo_yellow_1774953173938.png"
+                                    alt="Lamborghini">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="full">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Hand wash with premium shampoo</li>
+                                    <li>Premium quality wax (2–4 weeks)</li>
+                                    <li>All interior surfaces scrubbed</li>
+                                    <li>Deep vacuum: carpets, seats, mats</li>
+                                    <li>Engine bay light clean</li>
+                                    <li>Leather conditioning treatment</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="full">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_lambo_yellow_1774953173938.png" alt="Lamborghini">
-                        </div>
+
                     </div>
-
-                    <div class="card-back" data-package="full">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Hand wash with premium shampoo</li>
-                                <li>Premium quality wax (2–4 weeks)</li>
-                                <li>All interior surfaces scrubbed</li>
-                                <li>Deep vacuum: carpets, seats, mats</li>
-                                <li>Engine bay light clean</li>
-                                <li>Leather conditioning treatment</li>
-                            </ul>
-                        </div>
-
-                        <a href="#book" class="btn-service-book" data-package="full">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
-                    </div>
-
                 </div>
-            </div>
 
 
-            <!-- 3. DECONTAMINATION -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 3. DECONTAMINATION -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 3,999</span>
-                            <h3>Decontamination</h3>
-                            <p class="subtitle">
-                                Deep science for stubborn contaminants — iron, tar, water spots eliminated.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 3,999</span>
+                                <h3>Decontamination</h3>
+                                <p class="subtitle">
+                                    Deep science for stubborn contaminants — iron, tar, water spots eliminated.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_audi_orange_1774953231641.png" alt="Audi">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="decon">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Clay bar & iron treatment</li>
+                                    <li>Water spot & tar removal</li>
+                                    <li>Leather seat treatment</li>
+                                    <li>Rubber floor mat deep clean</li>
+                                    <li>Thorough vacuuming</li>
+                                    <li>Paint surface prep coat</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="decon">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_audi_orange_1774953231641.png" alt="Audi">
-                        </div>
+
                     </div>
-
-                    <div class="card-back" data-package="decon">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Clay bar & iron treatment</li>
-                                <li>Water spot & tar removal</li>
-                                <li>Leather seat treatment</li>
-                                <li>Rubber floor mat deep clean</li>
-                                <li>Thorough vacuuming</li>
-                                <li>Paint surface prep coat</li>
-                            </ul>
-                        </div>
-
-                        <a href="#book" class="btn-service-book" data-package="decon">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
-                    </div>
-
                 </div>
-            </div>
 
 
-            <!-- 4. CERAMIC COATING -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 4. CERAMIC COATING -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 9,999</span>
-                            <h3>Ceramic Coating</h3>
-                            <p class="subtitle">
-                                Long-lasting nano-ceramic protection — repels water, UV, and contamination for years.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 9,999</span>
+                                <h3>Ceramic Coating</h3>
+                                <p class="subtitle">
+                                    Long-lasting nano-ceramic protection — repels water, UV, and contamination for
+                                    years.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_koenigsegg_white_1774953200395.png"
+                                    alt="Koenigsegg">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="ceramic">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Full paint decontamination</li>
+                                    <li>Machine paint correction</li>
+                                    <li>Professional ceramic application</li>
+                                    <li>2–5 year protection warranty</li>
+                                    <li>Hydrophobic finish</li>
+                                    <li>UV & scratch resistance</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="ceramic">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_koenigsegg_white_1774953200395.png"
-                                alt="Koenigsegg">
-                        </div>
+
                     </div>
-
-                    <div class="card-back" data-package="ceramic">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Full paint decontamination</li>
-                                <li>Machine paint correction</li>
-                                <li>Professional ceramic application</li>
-                                <li>2–5 year protection warranty</li>
-                                <li>Hydrophobic finish</li>
-                                <li>UV & scratch resistance</li>
-                            </ul>
-                        </div>
-
-                        <a href="#book" class="btn-service-book" data-package="ceramic">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
-                    </div>
-
                 </div>
-            </div>
 
 
-            <!-- 5. PAINT CORRECTION -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 5. PAINT CORRECTION -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 5,999</span>
-                            <h3>Paint Correction</h3>
-                            <p class="subtitle">
-                                Swirl marks, scratches, and oxidation dissolved with machine polishing mastery.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 5,999</span>
+                                <h3>Paint Correction</h3>
+                                <p class="subtitle">
+                                    Swirl marks, scratches, and oxidation dissolved with machine polishing mastery.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_merc_black_1774953400000_1774953260285.png"
+                                    alt="Mercedes">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="paint">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Single or dual-stage polishing</li>
+                                    <li>Swirl mark elimination</li>
+                                    <li>Light scratch removal</li>
+                                    <li>Paint depth measurement</li>
+                                    <li>Finishing polish</li>
+                                    <li>Paint sealant application</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="paint">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_merc_black_1774953400000_1774953260285.png"
-                                alt="Mercedes">
-                        </div>
+
                     </div>
-
-                    <div class="card-back" data-package="paint">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Single or dual-stage polishing</li>
-                                <li>Swirl mark elimination</li>
-                                <li>Light scratch removal</li>
-                                <li>Paint depth measurement</li>
-                                <li>Finishing polish</li>
-                                <li>Paint sealant application</li>
-                            </ul>
-                        </div>
-
-                        <a href="#book" class="btn-service-book" data-package="paint">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
-                    </div>
-
                 </div>
-            </div>
 
 
-            <!-- 6. PPF WRAP -->
-            <div class="service-card">
-                <div class="card-inner">
+                <!-- 6. PPF WRAP -->
+                <div class="service-card">
+                    <div class="card-inner">
 
-                    <div class="card-front">
-                        <div class="card-front-top">
-                            <span class="badge">STARTING AT &#8377; 14,999</span>
-                            <h3>PPF Wrap</h3>
-                            <p class="subtitle">
-                                Paint Protection Film — invisible armour against stone chips, bugs, and road debris.
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 14,999</span>
+                                <h3>PPF Wrap</h3>
+                                <p class="subtitle">
+                                    Paint Protection Film — invisible armour against stone chips, bugs, and road debris.
+                                </p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom">
+                                <img class="card-front-img" src="service_bugatti_blue_1774953400000_1774953291278.png"
+                                    alt="Bugatti">
+                            </div>
+                        </div>
+
+                        <div class="card-back" data-package="ppf">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Partial or full body coverage</li>
+                                    <li>Self-healing film technology</li>
+                                    <li>10-year warranty coverage</li>
+                                    <li>High-clarity optical finish</li>
+                                    <li>Pre-cut precision application</li>
+                                    <li>Post-install ceramic top coat</li>
+                                </ul>
+                            </div>
+
+                            <a href="#book" class="btn-service-book" data-package="ppf">
+                                Book This Package
+                            </a>
+
+                            <p class="card-back-hint">
+                                Move away to flip back &#8617;
                             </p>
                         </div>
-                        <div class="card-front-bottom">
-                            <img class="card-front-img" src="service_bugatti_blue_1774953400000_1774953291278.png"
-                                alt="Bugatti">
+
+                    </div>
+                </div>
+
+                <!-- DUPLICATE SET FOR INFINITE SCROLL (MOBILE ONLY) -->
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 1,999</span>
+                                <h3>Express Detail</h3>
+                                <p class="subtitle">A swift yet thorough refresh for your vehicle — perfect for regular
+                                    upkeep.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_ferrari_red_1774953144261.png" alt="Ferrari"></div>
+                        </div>
+                        <div class="card-back" data-package="express">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Hand wash & wheel clean</li>
+                                    <li>Premium 2–4 week wax</li>
+                                    <li>Tire dressing (satin finish)</li>
+                                    <li>Air blow cracks & door jams</li>
+                                    <li>Interior vacuum & wipe-down</li>
+                                    <li>Window cleaning inside & out</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="express">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
                         </div>
                     </div>
-
-                    <div class="card-back" data-package="ppf">
-                        <div class="card-back-top">
-                            <div class="card-back-title">What's Included</div>
-                            <ul class="feature-list">
-                                <li>Partial or full body coverage</li>
-                                <li>Self-healing film technology</li>
-                                <li>10-year warranty coverage</li>
-                                <li>High-clarity optical finish</li>
-                                <li>Pre-cut precision application</li>
-                                <li>Post-install ceramic top coat</li>
-                            </ul>
+                </div>
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 2,999</span>
+                                <h3>Full Detail</h3>
+                                <p class="subtitle">The complete alchemy treatment — every inch of your car brought back
+                                    to
+                                    life.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_lambo_yellow_1774953173938.png" alt="Lamborghini"></div>
                         </div>
-
-                        <a href="#book" class="btn-service-book" data-package="ppf">
-                            Book This Package
-                        </a>
-
-                        <p class="card-back-hint">
-                            Move away to flip back &#8617;
-                        </p>
+                        <div class="card-back" data-package="full">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Hand wash with premium shampoo</li>
+                                    <li>Premium quality wax (2–4 weeks)</li>
+                                    <li>All interior surfaces scrubbed</li>
+                                    <li>Deep vacuum: carpets, seats, mats</li>
+                                    <li>Engine bay light clean</li>
+                                    <li>Leather conditioning treatment</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="full">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                        </div>
                     </div>
-
+                </div>
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 3,999</span>
+                                <h3>Decontamination</h3>
+                                <p class="subtitle">Deep science for stubborn contaminants — iron, tar, water spots
+                                    eliminated.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_audi_orange_1774953231641.png" alt="Audi"></div>
+                        </div>
+                        <div class="card-back" data-package="decon">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Clay bar & iron treatment</li>
+                                    <li>Water spot & tar removal</li>
+                                    <li>Leather seat treatment</li>
+                                    <li>Rubber floor mat deep clean</li>
+                                    <li>Thorough vacuuming</li>
+                                    <li>Paint surface prep coat</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="decon">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 9,999</span>
+                                <h3>Ceramic Coating</h3>
+                                <p class="subtitle">Long-lasting nano-ceramic protection — repels water, UV, and
+                                    contamination for years.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_koenigsegg_white_1774953200395.png" alt="Koenigsegg"></div>
+                        </div>
+                        <div class="card-back" data-package="ceramic">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Full paint decontamination</li>
+                                    <li>Machine paint correction</li>
+                                    <li>Professional ceramic application</li>
+                                    <li>2–5 year protection warranty</li>
+                                    <li>Hydrophobic finish</li>
+                                    <li>UV & scratch resistance</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="ceramic">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 5,999</span>
+                                <h3>Paint Correction</h3>
+                                <p class="subtitle">Swirl marks, scratches, and oxidation dissolved with machine
+                                    polishing
+                                    mastery.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_merc_black_1774953400000_1774953260285.png" alt="Mercedes"></div>
+                        </div>
+                        <div class="card-back" data-package="paint">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Single or dual-stage polishing</li>
+                                    <li>Swirl mark elimination</li>
+                                    <li>Light scratch removal</li>
+                                    <li>Paint depth measurement</li>
+                                    <li>Finishing polish</li>
+                                    <li>Paint sealant application</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="paint">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="service-card duplicate-card">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-front-top">
+                                <span class="badge">STARTING AT &#8377; 14,999</span>
+                                <h3>PPF Wrap</h3>
+                                <p class="subtitle">Paint Protection Film — invisible armour against stone chips, bugs,
+                                    and
+                                    road debris.</p>
+                                <div class="flip-card-instruction">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                                        <path
+                                            d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15">
+                                        </path>
+                                    </svg>
+                                    <span>Tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="card-front-bottom"><img class="card-front-img"
+                                    src="service_bugatti_blue_1774953400000_1774953291278.png" alt="Bugatti"></div>
+                        </div>
+                        <div class="card-back" data-package="ppf">
+                            <div class="card-back-top">
+                                <div class="card-back-title">What's Included</div>
+                                <ul class="feature-list">
+                                    <li>Partial or full body coverage</li>
+                                    <li>Self-healing film technology</li>
+                                    <li>10-year warranty coverage</li>
+                                    <li>High-clarity optical finish</li>
+                                    <li>Pre-cut precision application</li>
+                                    <li>Post-install ceramic top coat</li>
+                                </ul>
+                            </div>
+                            <a href="#book" class="btn-service-book" data-package="ppf">Book This Package</a>
+                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-
-        </div>
     </section>
+
 
     <!-- ─── PROCESS ─── -->
     <section class="process-section" id="process">
@@ -4533,11 +5057,14 @@
 
         // Close mobile menu when a link is clicked
         navLinks.querySelectorAll("a").forEach(link => {
-            link.addEventListener("click", () => {
-                // Remove class and fix history
-                navLinks.classList.remove("active");
-                if (history.state && history.state.menuOpen) {
-                    history.back();
+            link.addEventListener("click", (e) => {
+                // Determine if we need to close the menu
+                if (navLinks.classList.contains("active")) {
+                    navLinks.classList.remove("active");
+                    // Only go back if we pushed a state (menu is open)
+                    if (history.state && history.state.menuOpen) {
+                        history.back();
+                    }
                 }
             });
         });
@@ -4986,15 +5513,17 @@
             }
         );
 
-        // ── 3. SERVICES — cards stagger up with 3D tilt ──
-        gsap.fromTo(".service-card",
-            { y: 70, opacity: 0, rotateX: 10, transformOrigin: "top center" },
-            {
-                y: 0, opacity: 1, rotateX: 0, duration: 0.75, ease: "power4.out",
-                stagger: { amount: 0.5, from: "start" },
-                scrollTrigger: { trigger: ".services", start: "top 78%", ...ST }
-            }
-        );
+        // ── 3. SERVICES — cards stagger up with 3D tilt (Desktop Only) ──
+        mm.add("(min-width: 1025px)", () => {
+            gsap.fromTo(".service-card",
+                { y: 70, opacity: 0, rotateX: 10, transformOrigin: "top center" },
+                {
+                    y: 0, opacity: 1, rotateX: 0, duration: 0.75, ease: "power4.out",
+                    stagger: { amount: 0.5, from: "start" },
+                    scrollTrigger: { trigger: ".services", start: "top 78%", ...ST }
+                }
+            );
+        });
 
         // ── 4. GALLERY — title clips up, container fades ──
         gsap.fromTo(".gallery-section .section-title",
@@ -5496,6 +6025,100 @@
                 });
             });
         });
+    </script>
+
+    <!-- ─── SERVICE CAROUSEL: smooth RAF auto-scroll (mobile/tablet ≤1024px only) ─── -->
+    <script>
+    (function () {
+        // Only activate on mobile/tablet
+        var mq = window.matchMedia('(max-width: 1024px)');
+
+        function initCarousel() {
+            var scroller = document.querySelector('.service-scroller');
+            var track    = document.querySelector('.service-track');
+            if (!scroller || !track) return;
+
+            // ── Configuration ──────────────────────────────────────────────
+            var SPEED        = 0.6;   // px per frame (~36 px/s at 60 fps)
+            var RESUME_DELAY = 2500;  // ms to wait after last user interaction
+            // ───────────────────────────────────────────────────────────────
+
+            var rafId        = null;
+            var paused       = false;
+            var resumeTimer  = null;
+
+            // Disable scroll-snap during auto-scroll to prevent snapping fights
+            scroller.style.scrollSnapType = 'none';
+
+            function scheduleResume() {
+                clearTimeout(resumeTimer);
+                resumeTimer = setTimeout(function () {
+                    paused = false;
+                    // Re-disable snap after manual interaction ends
+                    scroller.style.scrollSnapType = 'none';
+                }, RESUME_DELAY);
+            }
+
+            // ── RAF loop ───────────────────────────────────────────────────
+            function tick() {
+                rafId = requestAnimationFrame(tick);
+                if (paused) return;
+
+                // Advance position
+                scroller.scrollLeft += SPEED;
+
+                // Infinite loop: when we've scrolled past the first half
+                // (the original 6 cards), jump back silently
+                var halfWidth = track.scrollWidth / 2;
+                if (scroller.scrollLeft >= halfWidth) {
+                    // Instant reset — no visual jump because the second half
+                    // is an exact copy of the first half
+                    scroller.scrollLeft -= halfWidth;
+                }
+            }
+
+            rafId = requestAnimationFrame(tick);
+
+            // ── Pause on any user interaction ──────────────────────────────
+            function onInteractionStart() {
+                paused = true;
+                clearTimeout(resumeTimer);
+                // Re-enable snap so manual swipe feels natural
+                scroller.style.scrollSnapType = 'x mandatory';
+            }
+
+            function onInteractionEnd() {
+                scheduleResume();
+            }
+
+            // Touch events
+            scroller.addEventListener('touchstart',  onInteractionStart, { passive: true });
+            scroller.addEventListener('touchend',    onInteractionEnd,   { passive: true });
+            scroller.addEventListener('touchcancel', onInteractionEnd,   { passive: true });
+
+            // Mouse / pointer events (for desktop-width testing via DevTools)
+            scroller.addEventListener('pointerdown', onInteractionStart, { passive: true });
+            scroller.addEventListener('pointerup',   onInteractionEnd,   { passive: true });
+
+            // Scroll wheel / trackpad
+            scroller.addEventListener('wheel', function () {
+                onInteractionStart();
+                scheduleResume();
+            }, { passive: true });
+        }
+
+        function run() {
+            if (mq.matches) {
+                initCarousel();
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', run);
+        } else {
+            run();
+        }
+    })();
     </script>
 </body>
 
