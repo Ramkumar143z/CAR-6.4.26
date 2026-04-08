@@ -5413,18 +5413,42 @@
             }
         }
 
-        // Initialize Masonry Gallery with project images
-        const galleryItems = [
-            { id: '1', img: 'car2.png', height: 600 },
-            { id: '2', img: 'service_ferrari_red_1774953144261.png', height: 400 },
-            { id: '3', img: 'car3.png', height: 800 },
-            { id: '4', img: 'service_bugatti_blue_1774953400000_1774953291278.png', height: 500 },
-            { id: '5', img: 'hero_car.png', height: 900 },
-            { id: '6', img: 'service_merc_black_1774953400000_1774953260285.png', height: 450 },
-            { id: '7', img: 'service_koenigsegg_white_1774953200395.png', height: 550 },
-            { id: '8', img: 'renovation_car.png', height: 700 },
-            { id: '9', img: 'car gold.png', height: 500 }
+        // ── UNIFIED GALLERY CONTROL via localStorage ──
+        // Default images seeded on first visit; admin can add/remove any image
+        const _DEFAULT_GALLERY = [
+            { id: '1', img: 'car2.png', height: 600, isDefault: true },
+            { id: '2', img: 'service_ferrari_red_1774953144261.png', height: 400, isDefault: true },
+            { id: '3', img: 'car3.png', height: 800, isDefault: true },
+            { id: '4', img: 'service_bugatti_blue_1774953400000_1774953291278.png', height: 500, isDefault: true },
+            { id: '5', img: 'hero_car.png', height: 900, isDefault: true },
+            { id: '6', img: 'service_merc_black_1774953400000_1774953260285.png', height: 450, isDefault: true },
+            { id: '7', img: 'service_koenigsegg_white_1774953200395.png', height: 550, isDefault: true },
+            { id: '8', img: 'renovation_car.png', height: 700, isDefault: true },
+            { id: '9', img: 'car gold.png', height: 500, isDefault: true }
         ];
+
+        // Seed on first visit if not already set
+        if (!localStorage.getItem('galleryControlled')) {
+            localStorage.setItem('galleryControlled', JSON.stringify(_DEFAULT_GALLERY));
+        }
+
+        const galleryItems = JSON.parse(localStorage.getItem('galleryControlled'));
+
+        // Populate mobile horizontal gallery with all controlled items
+        const _horizRoot = document.getElementById('horizontal-gallery-root');
+        if (_horizRoot) {
+            _horizRoot.innerHTML = '';
+            galleryItems.forEach(item => {
+                const slide = document.createElement('div');
+                slide.className = 'gallery-scroll-item';
+                const img = document.createElement('img');
+                img.className = 'gallery-scroll-img';
+                img.src = item.img;
+                img.alt = 'Gallery image';
+                slide.appendChild(img);
+                _horizRoot.appendChild(slide);
+            });
+        }
 
         setTimeout(() => {
             if (document.getElementById('masonryContainer')) {
@@ -6000,6 +6024,6 @@
             }
         })();
     </script>
-</body>
 
+</body>
 </html>
