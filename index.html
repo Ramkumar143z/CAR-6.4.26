@@ -544,9 +544,30 @@
             transform-style: preserve-3d;
         }
 
-        /* Flip on hover */
-        .service-card:hover .card-inner {
+        /* Flip on hover (only strictly mouse-based devices) */
+        @media (hover: hover) {
+            .service-card:hover .card-inner {
+                transform: rotateY(180deg);
+            }
+            .service-card:hover .card-front,
+            .service-card:hover .card-back {
+                box-shadow:
+                    0 0 30px rgba(212, 175, 55, 0.5),
+                    0 0 60px rgba(245, 208, 97, 0.25),
+                    inset 0 0 0 1px rgba(245, 208, 97, 0.5);
+            }
+        }
+
+        /* Explicit class for mobile click-to-flip toggle */
+        .service-card.is-flipped .card-inner {
             transform: rotateY(180deg);
+        }
+        .service-card.is-flipped .card-front,
+        .service-card.is-flipped .card-back {
+            box-shadow:
+                0 0 30px rgba(212, 175, 55, 0.5),
+                0 0 60px rgba(245, 208, 97, 0.25),
+                inset 0 0 0 1px rgba(245, 208, 97, 0.5);
         }
 
         /* ── SHARED FACE STYLES ── */
@@ -581,13 +602,6 @@
             transition: box-shadow 0.4s ease;
         }
 
-        .service-card:hover .card-front,
-        .service-card:hover .card-back {
-            box-shadow:
-                0 0 30px rgba(212, 175, 55, 0.5),
-                0 0 60px rgba(245, 208, 97, 0.25),
-                inset 0 0 0 1px rgba(245, 208, 97, 0.5);
-        }
 
         /* ── Animated gradient border on card-front ── */
         .service-card .card-front {
@@ -4013,13 +4027,10 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="express">
                                 Book this package
                             </a>
 
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4069,13 +4080,10 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="full">
                                 Book this package
                             </a>
 
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4128,9 +4136,6 @@
                                 Book this package
                             </a>
 
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4180,12 +4185,9 @@
                                     <li>UV & scratch resistance</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="ceramic">
                                 Book this package
                             </a>
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4235,13 +4237,10 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="paint">
                                 Book this package
                             </a>
 
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4291,13 +4290,10 @@
                                 </ul>
                             </div>
 
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="ppf">
                                 Book this package
                             </a>
 
-                            <p class="card-back-hint">
-                                Move away to flip back &#8617;
-                            </p>
                         </div>
 
                     </div>
@@ -4383,7 +4379,7 @@
                                     <li>Leather conditioning treatment</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="full">
                                 Book this package
                             </a>
                         </div>
@@ -4426,7 +4422,7 @@
                                 </ul>
                             </div>
                             <a href="#book" class="btn-service-book" data-package="decon">Book This Package</a>
-                            <p class="card-back-hint">Move away to flip back &#8617;</p>
+
                         </div>
                     </div>
                 </div>
@@ -4466,7 +4462,7 @@
                                     <li>UV & scratch resistance</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="ceramic">
                                 Book this package
                             </a>
                         </div>
@@ -4509,7 +4505,7 @@
                                     <li>Paint sealant application</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="paint">
                                 Book this package
                             </a>
                         </div>
@@ -4552,7 +4548,7 @@
                                     <li>Post-install ceramic top coat</li>
                                 </ul>
                             </div>
-                            <a href="#book" class="btn-service-book" data-package="decon">
+                            <a href="#book" class="btn-service-book" data-package="ppf">
                                 Book this package
                             </a>
                         </div>
@@ -5897,35 +5893,55 @@
         });
     </script>
 
-    <!-- Book This Package Button - Scroll to Booking Section -->
+    <!-- Book This Package Button & Flip Card Toggles -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Listen for clicks on both the button and the whole back face of the card
-            const serviceBacks = document.querySelectorAll('.card-back');
+        (function () {
+            // Fast, unobtrusive event delegation that ONLY handles the form data pre-filling
+            // We allow the native browser `href="#book"` to handle the scroll. 
+            // This prevents conflicts with GSAP ScrollTrigger and mobile scroll bugs.
+            function captureBookingData(e) {
+                const btn = e.target.closest('.btn-service-book');
+                const card = e.target.closest('.service-card');
+                
+                // If they strictly clicked a flip card, but NOT the button, toggle flip state
+                if (card && !btn) {
+                    card.classList.toggle('is-flipped');
+                    // Stop further processing so we don't trigger form selections
+                    return;
+                }
 
-            serviceBacks.forEach(cardBack => {
-                cardBack.addEventListener('click', function (e) {
-                    // Logic to find the package key from the card or its children
-                    const packageKey = cardBack.getAttribute('data-package');
-                    const bookingSection = document.getElementById('book');
-                    const packageSelect = document.getElementById('bf-package');
+                // If they didn't click the button, ignore everything else
+                if (!btn) return;
 
-                    console.log("Package selected:", packageKey);
+                const cardBack = e.target.closest('.card-back');
+                let packageKey = btn.getAttribute('data-package');
 
-                    // Pre-select the correct package in the form
-                    if (packageSelect && packageKey) {
-                        packageSelect.value = packageKey;
-                    }
+                if (!packageKey || packageKey === 'decon') {
+                    if (cardBack) packageKey = cardBack.getAttribute('data-package');
+                }
 
-                    // Smooth scroll to the booking section
-                    if (bookingSection) {
-                        bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    } else {
-                        console.warn("Booking section with id 'book' not found");
-                    }
-                });
-            });
-        });
+                const packageSelect = document.getElementById('bf-package');
+                if (packageSelect && packageKey) {
+                    packageSelect.value = packageKey;
+                }
+            }
+
+            // Bind to window to guarantee capture
+            window.addEventListener('click', captureBookingData);
+            
+            // On mobile touch, also force a quick hash update just in case native click drops
+            window.addEventListener('touchend', function(e) {
+                const btn = e.target.closest('.btn-service-book');
+                if (btn) {
+                    captureBookingData(e);
+                    // Safely and natively tell the browser to jump there
+                    // setTimeout here allows the click to fire normally if it's going to
+                    setTimeout(() => {
+                        window.location.hash = '#book';
+                    }, 50);
+                }
+            }, { passive: true });
+        })();
     </script>
 
     <!-- ─── SERVICE CAROUSEL: smooth RAF auto-scroll (mobile/tablet ≤1024px only) ─── -->
@@ -5968,7 +5984,7 @@
                         isRunning = false;
                         return;
                     }
-                    
+
                     rafId = requestAnimationFrame(tick);
                     if (paused) return;
 
@@ -6016,7 +6032,7 @@
             }
 
             mq.addEventListener('change', handleResize);
-            
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', handleResize);
             } else {
@@ -6026,4 +6042,5 @@
     </script>
 
 </body>
+
 </html>
